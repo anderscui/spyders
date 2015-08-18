@@ -17,7 +17,17 @@ class DmozSpider(scrapy.Spider):
     def parse_dir_contents(self, response):
         for sel in response.xpath('//ul/li'):
             item = DmozItem()
-            item['title'] = sel.xpath('a/text()').extract()
-            item['link'] = sel.xpath('a/@href').extract()
-            item['desc'] = sel.xpath('text()').extract()
+
+            t = sel.xpath('a/text()').extract()
+            l = sel.xpath('a/@href').extract()
+            d = sel.xpath('text()').extract()
+
+            if len(t) == 0 or len(l) == 0 or len(d) == 0:
+                print('incomplete data........')
+
+            item['title'] = t[0] if t else 'N/A'
+            item['link'] = l[0] if l else 'N/A'
+            item['desc'] = d[-1] if d else 'N/A'
             yield item
+
+
