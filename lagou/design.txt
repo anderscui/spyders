@@ -1,0 +1,35 @@
+
+1. Models
+
+    1.1 Keyword
+        Id: 10
+        Name: Python
+        Category: 技术
+        SubCategory: 后端
+        Encoded: C# -> C%23; 数据挖掘 -> shujuwajue (for query organizing)
+
+    1.2 Position
+
+
+2. URLs
+
+    2.1 home: http://www.lagou.com/
+    2.2 list: http://www.lagou.com/jobs/positionAjax.json?kd=Python&pn=2&first=false
+    2.3 pos: http://www.lagou.com/jobs/{id}.html
+    2.4 com: http://www.lagou.com/gongsi/{id}.html
+
+    import json
+    json.loads(response.body)
+
+
+3. DB
+
+    see gen.sql
+
+    TODO: crawl history;
+
+4.
+
+
+5.
+
