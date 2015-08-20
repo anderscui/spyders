@@ -7,7 +7,7 @@
 #
 # http://doc.scrapy.org/en/latest/topics/settings.html
 # http://scrapy.readthedocs.org/en/latest/topics/downloader-middleware.html
-#     http://scrapy.readthedocs.org/en/latest/topics/spider-middleware.html
+# http://scrapy.readthedocs.org/en/latest/topics/spider-middleware.html
 
 BOT_NAME = 'lagou'
 
@@ -25,7 +25,7 @@ CONCURRENT_REQUESTS = 5
 # Configure a delay for requests for the same website (default: 0)
 # See http://scrapy.readthedocs.org/en/latest/topics/settings.html#download-delay
 # See also autothrottle settings and docs
-DOWNLOAD_DELAY = 5
+DOWNLOAD_DELAY = 8
 RANDOMIZE_DOWNLOAD_DELAY = True
 
 # The download delay setting will honor only one of:
@@ -67,9 +67,10 @@ DEFAULT_REQUEST_HEADERS = {
 
 # Configure item pipelines
 # See http://scrapy.readthedocs.org/en/latest/topics/item-pipeline.html
-#ITEM_PIPELINES = {
-#    'lagou.pipelines.SomePipeline': 300,
-#}
+ITEM_PIPELINES = {
+    'lagou.pipelines.KeywordsSQLitePipeline': 300,
+    'lagou.pipelines.PositionsSQLitePipeline': 600,
+}
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See http://doc.scrapy.org/en/latest/topics/autothrottle.html
@@ -93,8 +94,9 @@ DEFAULT_REQUEST_HEADERS = {
 # logging setting
 # LOG_ENABLED = True
 # LOG_ENCODING = 'utf-8'
-# LOG_FILE = 'logs.txt'
+LOG_FILE = 'logs.txt'
 # LOG_FORMAT = '%(asctime)s [%(name)s] %(levelname)s: %(message)s'
 # LOG_DATEFORMAT = '%Y-%m-%d %H:%M:%S'
 # LOG_LEVEL = 'DEBUG'
 # LOG_STDOUT = False
+

@@ -28,7 +28,11 @@
 
     TODO: crawl history;
 
-4.
+4. Regex
+
+    navs = response.xpath("//div[@class='mainNavs']/div[@class='menu_box']")
+    cat = navs[0].xpath("div[@class='menu_main']/h2").extract()
+
 
 
 5.

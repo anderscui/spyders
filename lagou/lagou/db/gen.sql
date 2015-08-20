@@ -10,7 +10,7 @@ CREATE TABLE "main"."keyword" (
 
 CREATE TABLE "main"."position" (
   "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-  "job_id" INTEGER NOT NULL,
+  "pos_id" INTEGER NOT NULL,
   "name" TEXT NOT NULL,
   "create_time" TEXT NOT NULL,
   "city" TEXT NOT NULL,
@@ -20,7 +20,7 @@ CREATE TABLE "main"."position" (
   "industry" TEXT,
 
   "category" TEXT,
-  "sub_category" TEXT,
+  "subcategory" TEXT,
 
   "desc" TEXT NOT NULL,
 

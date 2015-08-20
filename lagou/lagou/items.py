@@ -7,7 +7,7 @@ class KeywordItem(Item):
     id = Field()
     name = Field()
     category = Field()
-    sub_category = Field()
+    subcategory = Field()
     encoded = Field()
     created_on = Field()
     updated_on = Field()
@@ -19,8 +19,8 @@ class PositionItem(Item):
 
     # meta
     id = Field()
-    job_id = Field()
-    title = Field()
+    pos_id = Field()
+    name = Field()
     create_time = Field()
     city = Field()
     salary = Field()
@@ -29,7 +29,7 @@ class PositionItem(Item):
     industry = Field()
 
     category = Field()
-    sub_category = Field()
+    subcategory = Field()
 
     # contents
     desc = Field()
