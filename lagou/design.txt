@@ -28,12 +28,16 @@
 
     TODO: crawl history;
 
-4. Regex
+4. xpath & css
 
     navs = response.xpath("//div[@class='mainNavs']/div[@class='menu_box']")
     cat = navs[0].xpath("div[@class='menu_main']/h2").extract()
 
+    job_desc = response.xpath("//dd[@class='job_bt']").extract()
 
+    dl_com = response.xpath("//dl[@class='job_company']")
+    dl_com.re(u"<h4>工作地址</h4>\s*<div>(.+)</div>")
+    dl_com.re(u"<h4>工作地址</h4>\s*<div>(?P<address>.+)</div>")
 
 5.
 

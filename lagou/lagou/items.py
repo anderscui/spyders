@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from scrapy import Item, Field
+import sqlite3
 
 
 class KeywordItem(Item):
@@ -55,3 +56,21 @@ class PositionItem(Item):
     # tracking
     created_on = Field()
     updated_on = Field()
+
+
+class ItemDao(object):
+    dbfile = 'lagou.db'
+
+    def keyword_exists(self, keyword):
+        conn = sqlite3.connect(self.dbfile)
+        with conn:
+            cur = conn.cursor()
+            val = cur.execute('SELECT EXISTS(SELECT 1 FROM keyword WHERE name = ?)', (keyword,)).fetchone()[0]
+            return val
+
+    def pos_exists(self, pos_id):
+        conn = sqlite3.connect(self.dbfile)
+        with conn:
+            cur = conn.cursor()
+            val = cur.execute('SELECT EXISTS(SELECT 1 FROM position WHERE pos_id = ?)', (pos_id,)).fetchone()[0]
+            return val

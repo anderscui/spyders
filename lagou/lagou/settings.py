@@ -8,6 +8,7 @@
 # http://doc.scrapy.org/en/latest/topics/settings.html
 # http://scrapy.readthedocs.org/en/latest/topics/downloader-middleware.html
 # http://scrapy.readthedocs.org/en/latest/topics/spider-middleware.html
+import scrapy
 
 BOT_NAME = 'lagou'
 
@@ -25,11 +26,11 @@ CONCURRENT_REQUESTS = 5
 # Configure a delay for requests for the same website (default: 0)
 # See http://scrapy.readthedocs.org/en/latest/topics/settings.html#download-delay
 # See also autothrottle settings and docs
-DOWNLOAD_DELAY = 8
+DOWNLOAD_DELAY = 3
 RANDOMIZE_DOWNLOAD_DELAY = True
 
 # The download delay setting will honor only one of:
-#CONCURRENT_REQUESTS_PER_DOMAIN=16
+# CONCURRENT_REQUESTS_PER_DOMAIN=16
 #CONCURRENT_REQUESTS_PER_IP=16
 
 # DEPTH
@@ -47,6 +48,8 @@ DEFAULT_REQUEST_HEADERS = {
     'Accept-Language': 'en-US,en;q=0.7,zh-CN;q=0.3',
 }
 
+CLOSESPIDER_ERRORCOUNT = 5
+
 # Enable or disable spider middlewares
 # See http://scrapy.readthedocs.org/en/latest/topics/spider-middleware.html
 #SPIDER_MIDDLEWARES = {
@@ -61,14 +64,14 @@ DEFAULT_REQUEST_HEADERS = {
 
 # Enable or disable extensions
 # See http://scrapy.readthedocs.org/en/latest/topics/extensions.html
-#EXTENSIONS = {
-#    'scrapy.telnet.TelnetConsole': None,
-#}
+EXTENSIONS = {
+    # 'scrapy.telnet.TelnetConsole': None,
+    # scrapy.contrib.closespider.CloseSpider: 300,
+}
 
 # Configure item pipelines
 # See http://scrapy.readthedocs.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
-    'lagou.pipelines.KeywordsSQLitePipeline': 300,
     'lagou.pipelines.PositionsSQLitePipeline': 600,
 }
 
