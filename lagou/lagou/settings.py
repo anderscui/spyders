@@ -26,7 +26,7 @@ CONCURRENT_REQUESTS = 5
 # Configure a delay for requests for the same website (default: 0)
 # See http://scrapy.readthedocs.org/en/latest/topics/settings.html#download-delay
 # See also autothrottle settings and docs
-DOWNLOAD_DELAY = 3
+DOWNLOAD_DELAY = 6
 RANDOMIZE_DOWNLOAD_DELAY = True
 
 # The download delay setting will honor only one of:
@@ -34,7 +34,7 @@ RANDOMIZE_DOWNLOAD_DELAY = True
 #CONCURRENT_REQUESTS_PER_IP=16
 
 # DEPTH
-DEPTH_LIMIT = 6
+DEPTH_LIMIT = 50
 
 # Disable cookies (enabled by default)
 #COOKIES_ENABLED=False

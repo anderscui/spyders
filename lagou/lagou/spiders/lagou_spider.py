@@ -15,8 +15,10 @@ class LagouSpider(scrapy.Spider):
         "http://www.lagou.com/",
     ]
 
-    pos_list_url_format = 'http://www.lagou.com/jobs/positionAjax.json?kd={0}&pn={1}&first=false'
-    pos_detail_url_format = 'http://www.lagou.com/jobs/{0}.html'
+    pos_list_url_format = u'http://www.lagou.com/jobs/positionAjax.json?kd={0}&pn={1}&first=false'
+    pos_detail_url_format = u'http://www.lagou.com/jobs/{0}.html'
+
+    get_pos_detail = True
 
     def parse(self, response):
         self.logger.info('parse function called on %s', response.url)
@@ -52,13 +54,18 @@ class LagouSpider(scrapy.Spider):
 
                         yield item
 
-        kd = ['Java', 'Python', '.NET', 'shujuwajue', 'ziranyuyanchuli', 'sousuosuanfa']
-        pos_urls = [(k, self.pos_list_url_format.format(k, i)) for i in xrange(1, 2) for k in kd]
+        # kd = ['Java', 'Python', '.NET', 'shujuwajue', 'ziranyuyanchuli', 'sousuosuanfa']
+        #kd = [u'Python', u'数据挖掘', u'自然语言处理']
+        # kd = ['Java']
+        item_dao = ItemDao()
+        kd = item_dao.get_keywords()
+        pos_urls = [(k, self.pos_list_url_format.format(k, 1)) for k in kd]
 
         if get_positions:
             for pu in pos_urls:
                 request = scrapy.Request(url=pu[1], callback=self.parse_pos_list)
                 request.meta['kd'] = pu[0]
+                request.meta['pn'] = 1
                 yield request
 
     def parse_pos_list(self, response):
@@ -69,12 +76,17 @@ class LagouSpider(scrapy.Spider):
         if not result['success']:
             raise CloseSpider('fetch pos list failed, url: {0}'.format(response.url))
 
+        print 'pos_list', response.url
+        # print 'body', response.body
+
         for pos in result['content']['result']:
             item = PositionItem()
             item["pos_id"] = int(pos["positionId"])
 
             item_dao = ItemDao()
-            if item_dao.pos_exists(item["pos_id"]):
+            pos_exists, desc_exists = item_dao.pos_desc_exists(item["pos_id"])
+
+            if pos_exists:
                 print('pos {0} exists'.format(item["pos_id"]))
             else:
                 item["name"] = pos["positionName"]
@@ -114,18 +126,21 @@ class LagouSpider(scrapy.Spider):
                 yield item
 
             # pos detail
-            yield scrapy.Request(url=self.pos_detail_url_format.format(item["pos_id"]),
-                                 callback=self.parse_pos_detail)
+            if not desc_exists and self.get_pos_detail:
+                yield scrapy.Request(url=self.pos_detail_url_format.format(item["pos_id"]),
+                                     callback=self.parse_pos_detail)
 
         # next page
         c = result['content']
-        cur_page = int(c['currentPageNo'])
+        cur_page = int(response.meta['pn'])
         total_pages = int(c['totalPageCount'])
-        has_next = c['hasNextPage']
-        if has_next and (cur_page < total_pages):
+        print 'pager: %d of %d' % (cur_page, total_pages)
+        if cur_page < total_pages:
             kd = response.meta['kd']
             request = scrapy.Request(url=self.pos_list_url_format.format(kd, (cur_page+1)), callback=self.parse_pos_list)
+            print 'next url: ', request.url
             request.meta['kd'] = kd
+            request.meta['pn'] = cur_page + 1
             yield request
 
     def parse_pos_detail(self, response):
@@ -144,6 +159,7 @@ class LagouSpider(scrapy.Spider):
         item["desc"] = pos_desc
         item["com_url"] = com_url[0] if com_url else 'n/a'
         item["com_address"] = com_address[0] if com_address else 'n/a'
+        item['updated_on'] = datetime.datetime.now()
 
         yield item
 

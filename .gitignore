@@ -56,3 +56,5 @@ docs/_build/
 # PyBuilder
 target/
 lagou/logs.txt
+store_sqlite/lagou.db
+lagou/lagou.db

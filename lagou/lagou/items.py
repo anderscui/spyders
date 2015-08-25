@@ -74,3 +74,29 @@ class ItemDao(object):
             cur = conn.cursor()
             val = cur.execute('SELECT EXISTS(SELECT 1 FROM position WHERE pos_id = ?)', (pos_id,)).fetchone()[0]
             return val
+
+    def get_keywords(self):
+
+        conn = sqlite3.connect(self.dbfile)
+        with conn:
+            conn.row_factory = sqlite3.Row
+            cur = conn.cursor()
+            cur.execute('SELECT name FROM keyword')
+            rows = cur.fetchall()
+            return [row['name'] for row in rows]
+
+    # select  pos_id, desc, updated_on from position where pos_id = 783265
+    def pos_desc_exists(self, pos_id):
+        conn = sqlite3.connect(self.dbfile)
+        with conn:
+            conn.row_factory = sqlite3.Row
+            cur = conn.cursor()
+            row = cur.execute('select pos_id, desc, updated_on from position where pos_id = ?', (pos_id,)).fetchone()
+
+            row_exists, desc_exists = False, False
+            if row:
+                row_exists = True
+                if row['desc'] != 'n/a':
+                    desc_exists = True
+
+            return row_exists, desc_exists

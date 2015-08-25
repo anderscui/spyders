@@ -42,23 +42,34 @@ class PositionsSQLitePipeline(object):
                                                                          ?, ?, ?, ?, ?, ?, ?,
                                                                          ?, ?, ?, ?, ?, ?, ?, ?,
                                                                          ?, ?)""",
-                                      (item['pos_id'], item['name'], item['create_time'], item['city'], item['salary'], item['time_type'], item['fin_stage'], item['industry'],
-                                       item['category'], item['subcategory'], item['desc'], item['leader'], item['advantage'], item['education'], item['experience'],
-                                       item['com_id'], item['com_name'], item['com_short_name'], item['com_url'], item['com_labels'], item['com_logo'], item['com_size'], item['com_address'],
+                                      (item['pos_id'], item['name'], item['create_time'], item['city'], item['salary'],
+                                       item['time_type'], item['fin_stage'], item['industry'],
+                                       item['category'], item['subcategory'], item['desc'], item['leader'],
+                                       item['advantage'], item['education'], item['experience'],
+                                       item['com_id'], item['com_name'], item['com_short_name'], item['com_url'],
+                                       item['com_labels'], item['com_logo'], item['com_size'], item['com_address'],
                                        item['created_on'], item['updated_on']))
+
+                    self.conn.commit()
 
                 else:
                     # update an existing position
-                    self.conn.execute("""update position set desc = ?, com_url = ?, com_address = ? where pos_id = ?""",
-                                    (item['desc'], item['com_url'], item['com_address'], item['pos_id']))
+                    self.conn.execute("""update position set desc = ?, com_url = ?, com_address = ?, updated_on = ? where pos_id = ?""",
+                                      (item['desc'], item['com_url'], item['com_address'], item['updated_on'], item['pos_id']))
+
+                    self.conn.commit()
 
             except sqlite3.Error, e:
                 print 'Failed to insert item: ' + str(item['pos_id']) + " --> " + e.args[0]
         elif isinstance(item, KeywordItem):
             try:
-                self.conn.execute('insert into keyword(name, category, subcategory, encoded, created_on, updated_on) values (?, ?, ?, ?, ?, ?)',
-                                  (item['name'], item['category'], item['subcategory'],
-                                   item['encoded'], item['created_on'], item['updated_on']))
+                self.conn.execute(
+                    'insert into keyword(name, category, subcategory, encoded, created_on, updated_on) values (?, ?, ?, ?, ?, ?)',
+                    (item['name'], item['category'], item['subcategory'],
+                     item['encoded'], item['created_on'], item['updated_on']))
+
+                self.conn.commit()
+
             except sqlite3.Error, e:
                 print 'Failed to insert item: ' + item['name'] + " --> " + e.args[0]
         else:
