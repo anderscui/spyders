@@ -26,7 +26,7 @@ CONCURRENT_REQUESTS = 5
 # Configure a delay for requests for the same website (default: 0)
 # See http://scrapy.readthedocs.org/en/latest/topics/settings.html#download-delay
 # See also autothrottle settings and docs
-DOWNLOAD_DELAY = 6
+DOWNLOAD_DELAY = 3
 RANDOMIZE_DOWNLOAD_DELAY = True
 
 # The download delay setting will honor only one of:
@@ -100,6 +100,6 @@ ITEM_PIPELINES = {
 LOG_FILE = 'logs.txt'
 # LOG_FORMAT = '%(asctime)s [%(name)s] %(levelname)s: %(message)s'
 # LOG_DATEFORMAT = '%Y-%m-%d %H:%M:%S'
-# LOG_LEVEL = 'DEBUG'
+LOG_LEVEL = 'WARNING'
 # LOG_STDOUT = False
 

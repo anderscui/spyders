@@ -54,11 +54,10 @@ class LagouSpider(scrapy.Spider):
 
                         yield item
 
-        # kd = ['Java', 'Python', '.NET', 'shujuwajue', 'ziranyuyanchuli', 'sousuosuanfa']
-        #kd = [u'Python', u'数据挖掘', u'自然语言处理']
-        # kd = ['Java']
         item_dao = ItemDao()
         kd = item_dao.get_keywords()
+        # kd = [u'搜索算法', u'精准推荐']
+        # kd = [u'Python', u'自然语言处理']
         pos_urls = [(k, self.pos_list_url_format.format(k, 1)) for k in kd]
 
         if get_positions:
@@ -78,57 +77,83 @@ class LagouSpider(scrapy.Spider):
 
         print 'pos_list', response.url
         # print 'body', response.body
+        kd = response.meta['kd']
+        print kd
 
-        for pos in result['content']['result']:
-            item = PositionItem()
-            item["pos_id"] = int(pos["positionId"])
+        if result and result['content'] and result['content']['result']:
 
-            item_dao = ItemDao()
-            pos_exists, desc_exists = item_dao.pos_desc_exists(item["pos_id"])
+            for pos in result['content']['result']:
+                item = PositionItem()
+                item["pos_id"] = int(pos["positionId"])
 
-            if pos_exists:
-                print('pos {0} exists'.format(item["pos_id"]))
-            else:
-                item["name"] = pos["positionName"]
-                item["create_time"] = pos["createTime"]
-                item["city"] = pos["city"]
-                item["salary"] = pos["salary"]
-                item["time_type"] = pos["jobNature"]
-                item["fin_stage"] = pos["financeStage"]
-                item["industry"] = pos["industryField"]
+                item_dao = ItemDao()
+                pos_exists, desc_exists, create_time, tag = item_dao.pos_desc_exists(item["pos_id"])
 
-                item["category"] = pos["positionFirstType"]
-                item["subcategory"] = pos["positionType"]
+                # new, brief, detail
 
-                # TODO:
-                item["desc"] = 'n/a'
+                if pos_exists:
+                    print('update brief of {0}'.format(item["pos_id"]))
 
-                item["leader"] = pos["leaderName"]
-                item["advantage"] = pos["positionAdvantage"]
+                    item["mode"] = "brief"
+                    item["create_time"] = pos["createTime"]
+                    if not tag:
+                        tag = kd
+                    else:
+                        tags = unicode(tag).split(',')
+                        if kd not in tags:
+                            tags.append(kd)
+                        tag = ','.join(tags)
+                    item['tag'] = tag
+                    item['updated_on'] = datetime.datetime.now()
 
-                item["education"] = pos["education"]
-                item["experience"] = pos["workYear"]
+                else:
+                    item["mode"] = "new"
+                    item['tag'] = kd
 
-                item["com_id"] = int(pos["companyId"])
-                item["com_name"] = pos["companyShortName"]
-                item["com_short_name"] = pos["companyName"]
-                # TODO:
-                item["com_url"] = 'n/a'
-                item["com_labels"] = ';'.join(pos["companyLabelList"])
-                item["com_logo"] = pos["companyLogo"]
-                item["com_size"] = pos["companySize"]
-                # TODO:
-                item["com_address"] = 'n/a'
+                    item["name"] = pos["positionName"]
+                    item["create_time"] = pos["createTime"]
+                    item["city"] = pos["city"]
+                    item["salary"] = pos["salary"]
+                    item["time_type"] = pos["jobNature"]
+                    item["fin_stage"] = pos["financeStage"]
+                    item["industry"] = pos["industryField"]
+                    item["is_active"] = 1
 
-                item['created_on'] = datetime.datetime.now()
-                item['updated_on'] = datetime.datetime.now()
+                    item["category"] = pos["positionFirstType"]
+                    item["subcategory"] = pos["positionType"]
 
-                yield item
+                    # TODO:
+                    item["desc"] = 'n/a'
 
-            # pos detail
-            if not desc_exists and self.get_pos_detail:
-                yield scrapy.Request(url=self.pos_detail_url_format.format(item["pos_id"]),
-                                     callback=self.parse_pos_detail)
+                    item["leader"] = pos["leaderName"]
+                    item["advantage"] = pos["positionAdvantage"]
+
+                    item["education"] = pos["education"]
+                    item["experience"] = pos["workYear"]
+
+                    item["com_id"] = int(pos["companyId"])
+                    item["com_name"] = pos["companyShortName"]
+                    item["com_short_name"] = pos["companyName"]
+                    # TODO:
+                    item["com_url"] = 'n/a'
+                    item["com_labels"] = ';'.join(pos["companyLabelList"])
+                    item["com_logo"] = pos["companyLogo"]
+                    item["com_size"] = pos["companySize"]
+                    # TODO:
+                    item["com_address"] = 'n/a'
+
+                    item['created_on'] = datetime.datetime.now()
+                    item['updated_on'] = datetime.datetime.now()
+
+                    yield item
+
+                # pos detail
+                if not desc_exists and self.get_pos_detail:
+                    yield scrapy.Request(url=self.pos_detail_url_format.format(item["pos_id"]),
+                                         callback=self.parse_pos_detail)
+
+        else:
+            print 'invalid result'
 
         # next page
         c = result['content']
@@ -155,6 +180,7 @@ class LagouSpider(scrapy.Spider):
         com_address = company.re(u"<h4>工作地址</h4>\s*<div>(?P<address>.+)</div>")
 
         item = PositionItem()
+        item["mode"] = "detail"
         item["pos_id"] = int(pos_id)
         item["desc"] = pos_desc
         item["com_url"] = com_url[0] if com_url else 'n/a'

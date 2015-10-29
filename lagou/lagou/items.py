@@ -28,7 +28,9 @@ class PositionItem(Item):
     time_type = Field()
     fin_stage = Field()
     industry = Field()
+    is_active = Field()
 
+    tag = Field()
     category = Field()
     subcategory = Field()
 
@@ -52,6 +54,10 @@ class PositionItem(Item):
     com_logo = Field()
     com_size = Field()
     com_address = Field()
+
+    # modes
+    # new, brief, detail
+    mode = Field()
 
     # tracking
     created_on = Field()
@@ -91,12 +97,17 @@ class ItemDao(object):
         with conn:
             conn.row_factory = sqlite3.Row
             cur = conn.cursor()
-            row = cur.execute('select pos_id, desc, updated_on from position where pos_id = ?', (pos_id,)).fetchone()
+            row = cur.execute('select pos_id, desc, create_time, tag, updated_on from position where pos_id = ?', (pos_id,)).fetchone()
 
-            row_exists, desc_exists = False, False
+            row_exists, desc_exists, create_time, tag = False, False, None, None
             if row:
                 row_exists = True
-                if row['desc'] != 'n/a':
+
+                desc = row['desc']
+                create_time = row['create_time']
+                tag = row['tag']
+
+                if desc != 'n/a':
                     desc_exists = True
 
-            return row_exists, desc_exists
+            return row_exists, desc_exists, create_time, tag

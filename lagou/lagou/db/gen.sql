@@ -44,3 +44,6 @@ CREATE TABLE "main"."position" (
   "created_on" TEXT NOT NULL,
   "updated_on" TEXT NOT NULL
 );
+
+ALTER TABLE "main"."position" ADD COLUMN tag TEXT;
+ALTER TABLE "main"."position" ADD COLUMN is_active INTEGER DEFAULT 1;
